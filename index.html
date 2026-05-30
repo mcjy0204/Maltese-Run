@@ -152,6 +152,16 @@
             padding-top: 10px;
             border-top: 2px solid #eee;
         }
+        .corner-sign {
+            position: fixed;
+            bottom: 8px;
+            right: 12px;
+            color: rgba(128, 128, 128, 0.4);
+            font-size: 13px;
+            pointer-events: none;
+            user-select: none;
+            z-index: 5;
+        }
     </style>
 </head>
 <body>
@@ -213,6 +223,8 @@
             <p>当前速度：8.0</p>
         </div>
     </div>
+
+     <div class="corner-sign">墨尘寂夜</div>
 
     <audio id="bgMusic1">
         <source src="bgm1.mp3" type="audio/mpeg">
