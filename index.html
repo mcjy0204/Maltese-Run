@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小鸡毛快跑 🐶</title>
     <style>
         * {
@@ -32,7 +33,7 @@
         }
         
         h1 {
-            font-size: 30px;
+            font-size: 24px;
             margin-bottom: 10px;
             color: #8B4513;
         }
@@ -81,7 +82,34 @@
             background-color: rgba(0, 0, 0, 0.5);
         }
 
-        /* 右侧游戏介绍面板 */
+        .touch-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 99;
+        }
+        .touch-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.35);
+            color: #fff;
+            font-size: 26px;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .touch-btn:active {
+            background: rgba(0,0,0,0.6);
+        }
+
         .game-info-panel {
             width: 300px;
             height: 400px;
@@ -130,7 +158,6 @@
     <div class="game-container">
         <h1>小鸡毛快跑</h1>
         
-        <!-- 音乐控制按钮 -->
         <div class="music-controls">
             <div class="music-btn" id="musicToggle">🔊</div>
             <div class="music-btn" id="volumeDown">🔉</div>
@@ -138,13 +165,17 @@
         </div>
         
         <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+        <div class="touch-buttons">
+            <div class="touch-btn" id="btnJump">↑</div>
+            <div class="touch-btn" id="btnCrouch">↓</div>
+        </div>
         
         <div class="instructions-bottom">
             <p>🎶点击右上角按钮控制音乐声音</p>
         </div>
     </div>
 
-    <!-- 右侧游戏介绍面板 -->
     <div class="game-info-panel">
         <h2>📖 游戏介绍</h2>
         
@@ -183,7 +214,6 @@
         </div>
     </div>
 
-    <!-- 三首背景音乐 -->
     <audio id="bgMusic1">
         <source src="bgm1.mp3" type="audio/mpeg">
     
@@ -195,13 +225,11 @@
     
 
     <script>
-        // 获取画布和上下文
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const WIDTH = canvas.width;
         const HEIGHT = canvas.height;
 
-        // 游戏状态
         let gameOver = false;
         let isPaused = false;
         let score = 0;
@@ -211,11 +239,9 @@
         let gameStarted = false;
         let showCollisionBox = false;
 
-        // 地面高度参数
         const GROUND_Y = HEIGHT - 60;
         const GROUND_HEIGHT = 20;
 
-        // ====================== 歌曲 ======================
         const musicList = [
             document.getElementById('bgMusic1'),
             document.getElementById('bgMusic2'),
@@ -226,10 +252,8 @@
         let musicWasPlaying = false;
         let volume = 0.5;
 
-        // 统一设置音量
         musicList.forEach(audio => {
             audio.volume = volume;
-            // 歌曲播放结束自动切下一首
             audio.addEventListener('ended', () => {
                 if(musicPlaying){
                     currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
@@ -242,13 +266,11 @@
         const volumeDown = document.getElementById('volumeDown');
         const volumeUp = document.getElementById('volumeUp');
 
-        // 播放当前曲目
         function playCurrentMusic(){
             musicList.forEach(a => a.pause());
             musicList[currentMusicIndex].play().catch(e => console.log("音乐播放拦截"));
         }
 
-        // 音乐开关
         function toggleMusic() {
             if (musicPlaying) {
                 musicList[currentMusicIndex].pause();
@@ -261,21 +283,18 @@
             }
         }
 
-        // 减小音量
         function decreaseVolume() {
             volume = Math.max(0, volume - 0.1);
             musicList.forEach(a => a.volume = volume);
             updateMusicButton();
         }
 
-        // 增大音量
         function increaseVolume() {
             volume = Math.min(1, volume + 0.1);
             musicList.forEach(a => a.volume = volume);
             updateMusicButton();
         }
 
-        // 更新按钮图标
         function updateMusicButton() {
             if (volume === 0) {
                 musicToggle.textContent = '🔇';
@@ -286,13 +305,10 @@
             }
         }
 
-        // 绑定按钮事件
         musicToggle.addEventListener('click', toggleMusic);
         volumeDown.addEventListener('click', decreaseVolume);
         volumeUp.addEventListener('click', increaseVolume);
-        // ===========================================================
 
-        // 天气系统
         let weatherType = 0;
         const SWITCH_SCORE = 80;
         let lastWeatherScore = 0;
@@ -379,7 +395,6 @@
             }
         }
 
-        // 粒子系统
         let particles = [];
         class Particle {
             constructor(x, y, color, isExplosion = false) {
@@ -410,13 +425,11 @@
             }
         }
 
-        // 游戏速度
         let gameSpeed = 8;
         const BASE_SPEED = 8;
         const MAX_SPEED = 16;
         const SPEED_INCREMENT = 0.25;
 
-        // 图片资源
         const bgImage = new Image();
         bgImage.src = 'bg.png';
         let bgX1 = 0;
@@ -519,7 +532,7 @@
             }
         }
 
-        // 普通仙人掌
+        // 仙人掌
         class Cactus {
             constructor(xOffset = 0) {
                 this.x = WIDTH + xOffset;
@@ -593,7 +606,7 @@
             getRect() { return {x: this.x - 8, y: this.y, width: this.width + 16, height: this.height}; }
         }
 
-        // 飞鸟
+        // 鸟
         class Bird {
             constructor() {
                 this.x = WIDTH;
@@ -906,6 +919,35 @@
         canvas.addEventListener('click', (e) => {
             if (gameOver) resetGame();
         });
+
+        const btnJump = document.getElementById('btnJump');
+        const btnCrouch = document.getElementById('btnCrouch');
+
+        btnJump.addEventListener('click', () => {
+            if (!gameOver && !isPaused && gameStarted) {
+                dog.jump();
+                if (!musicPlaying && !gameOver) toggleMusic();
+            }
+        });
+
+        function startCrouch(e){
+            e.preventDefault();
+            if (!gameOver && !isPaused && gameStarted) {
+                dog.crouch();
+            }
+        }
+        function endCrouch(){
+            if (!gameOver && !isPaused && gameStarted) {
+                dog.standUp();
+            }
+        }
+
+        btnCrouch.addEventListener('mousedown', startCrouch);
+        btnCrouch.addEventListener('touchstart', startCrouch);
+        btnCrouch.addEventListener('mouseup', endCrouch);
+        btnCrouch.addEventListener('mouseleave', endCrouch);
+        btnCrouch.addEventListener('touchend', endCrouch);
+        btnCrouch.addEventListener('touchcancel', endCrouch);
     </script>
 </body>
 </html>
