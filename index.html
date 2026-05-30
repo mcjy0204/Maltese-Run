@@ -358,7 +358,7 @@
                 this.radius = Math.random() * 30 + 20;
                 this.speedX = (Math.random() - 0.5) * 1;
                 this.speedY = (Math.random() - 0.5) * 0.5;
-                this.alpha = Math.random() * 0.2 + 0.1;
+                this.alpha = Math.random() * 0.3 + 0.7;
             }
             update() {
                 this.x += this.speedX;
@@ -385,7 +385,7 @@
                 if (weatherType === 1) {
                     for (let i = 0; i < 60; i++) rainDrops.push(new RainDrop());
                 } else if (weatherType === 2) {
-                    for (let i = 0; i < 40; i++) fogParticles.push(new Fog());
+                    for (let i = 0; i < 60; i++) fogParticles.push(new Fog());
                 }
             }
         }
